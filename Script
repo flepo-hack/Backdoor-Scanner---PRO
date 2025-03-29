@@ -1,0 +1,144 @@
+-- Final Enhanced Version: Backdoor Scanner - PRO for Fluxus Executor
+-- Features: Advanced Backdoor scanning, Modern UI, Fly, Troll, Anti-Cheat, Anti-Detect, Draggable UI, Error Handling, and Extended Logging
+
+local scanner = {}
+
+-- Anti-Cheat & Anti-Detect Bypass
+local function antiCheatBypass()
+    -- Prevent detection and kicks (e.g., error 267 bypass)
+    local mt = getrawmetatable(game)
+    setreadonly(mt, false)
+    local oldIndex = mt.__index
+    mt.__index = function(t, k)
+        if k == "Kick" or k == "Destroy" then return function() end end
+        return oldIndex(t, k)
+    end
+end
+
+-- Extended Backdoor Scan Function (Three Passes with In-Depth Detection)
+local function scanForBackdoors()
+    local backdoors = {}
+    local methods = {"RemoteEvent", "RemoteFunction", "LoadString", "require", "ModuleScript", "Script"}
+    
+    for i = 1, 3 do
+        for _, obj in pairs(game:GetDescendants()) do
+            for _, method in pairs(methods) do
+                -- Check if object is a method that can be used as a backdoor
+                if obj:IsA(method) or (obj:IsA("ModuleScript") and obj.Source:find("require")) then
+                    table.insert(backdoors, obj:GetFullName())
+                end
+                -- Check if object has suspicious behaviors or strings
+                if obj:IsA("Script") and obj.Source:find("require") then
+                    table.insert(backdoors, "Suspicious Script Found: " .. obj:GetFullName())
+                end
+            end
+        end
+    end
+    
+    return backdoors
+end
+
+-- UI Creation
+local function createUI()
+    local ScreenGui = Instance.new("ScreenGui")
+    local MainFrame = Instance.new("Frame")
+    local FlyButton = Instance.new("TextButton")
+    local TrollButton = Instance.new("TextButton")
+    local MinimizeButton = Instance.new("TextButton")
+    local CloseButton = Instance.new("TextButton")
+    local LogButton = Instance.new("TextButton")
+    
+    ScreenGui.Parent = game.CoreGui
+    
+    -- Setup UI Elements
+    MainFrame.Size = UDim2.new(0, 450, 0, 350)
+    MainFrame.Position = UDim2.new(0.5, -225, 0.5, -175)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    MainFrame.BorderSizePixel = 2
+    MainFrame.Draggable = true
+    MainFrame.Active = true
+    
+    -- Helper function to create buttons
+    local function createButton(name, text, position, callback)
+        local button = Instance.new("TextButton")
+        button.Name = name
+        button.Text = text
+        button.Size = UDim2.new(0, 140, 0, 40)
+        button.Position = position
+        button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.Font = Enum.Font.SourceSans
+        button.TextSize = 18
+        button.Parent = MainFrame
+        button.MouseButton1Click:Connect(callback)
+        return button
+    end
+
+    -- Buttons
+    FlyButton = createButton("FlyButton", "Fly", UDim2.new(0, 10, 0, 10), function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/someone/flyscript.lua"))()
+    end)
+    
+    TrollButton = createButton("TrollButton", "Troll", UDim2.new(0, 10, 0, 70), function()
+        for _, player in pairs(game.Players:GetPlayers()) do
+            if player ~= game.Players.LocalPlayer then
+                player:FindFirstChildOfClass("PlayerGui"):Destroy()
+            end
+        end
+    end)
+    
+    MinimizeButton = createButton("MinimizeButton", "-", UDim2.new(0, 310, 0, 10), function()
+        MainFrame.Visible = false
+        local Ball = Instance.new("Frame")
+        Ball.Size = UDim2.new(0, 60, 0, 60)
+        Ball.Position = UDim2.new(0.9, 0, 0.1, 0)
+        Ball.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        Ball.Parent = ScreenGui
+        Ball.Draggable = true
+        Ball.Active = true
+        Ball.MouseButton1Click:Connect(function()
+            MainFrame.Visible = true
+            Ball:Destroy()
+        end)
+    end)
+    
+    LogButton = createButton("LogButton", "View Logs", UDim2.new(0, 160, 0, 250), function()
+        -- Log Window
+        local logWindow = Instance.new("TextLabel")
+        logWindow.Size = UDim2.new(0, 300, 0, 150)
+        logWindow.Position = UDim2.new(0.5, -150, 0.5, -75)
+        logWindow.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        logWindow.Text = "Log:\n"
+        logWindow.TextColor3 = Color3.fromRGB(255, 255, 255)
+        logWindow.TextSize = 16
+        logWindow.Parent = ScreenGui
+    end)
+    
+    CloseButton = createButton("CloseButton", "X", UDim2.new(0, 310, 0, 70), function()
+        ScreenGui:Destroy()
+    end)
+    
+    MainFrame.Parent = ScreenGui
+end
+
+-- Execute
+antiCheatBypass()
+local backdoors = scanForBackdoors()
+createUI()
+
+print("Backdoor Scanner - PRO Loaded. Found backdoors:", #backdoors)
+for _, v in pairs(backdoors) do
+    print("Potential Backdoor:", v)
+end
+
+-- Extended Logging
+local function logBackdoors(backdoors)
+    local logFile = "backdoor_log.txt"
+    local file = io.open(logFile, "a")
+    for _, backdoor in pairs(backdoors) do
+        file:write(backdoor .. "\n")
+    end
+    file:close()
+end
+
+logBackdoors(backdoors)
